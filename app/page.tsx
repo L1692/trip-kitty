@@ -1,18 +1,8 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { asc } from "drizzle-orm";
 import { db } from "@/src/db";
 import { viaggio } from "@/src/db/schema";
-
-type Viaggio = {
-  nome: string;
-  destinazione: string;
-  dataInizio: Temporal.PlainDate;
-  dataFine: Temporal.PlainDate;
-};
 
 const formattaData = (iso: string) =>
   Temporal.PlainDate.from(iso).toLocaleString("it-IT", { dateStyle: "medium" });
@@ -21,7 +11,8 @@ async function ElencoViaggi() {
   await connection(); // dato a ogni richiesta: nessuna query durante la build
   const viaggi = await db.select().from(viaggio).orderBy(asc(viaggio.dataInizio));
   
-  return (
+  if (viaggi.length === 0) return <p>Nessun viaggio</p>;
+  else return (
     <table>
       <thead>
         <tr>
@@ -31,11 +22,11 @@ async function ElencoViaggi() {
         </tr>
       </thead>
       <tbody>
-        {viaggi.map((viaggio) => (
-          <tr key={`${viaggio.nome}-${viaggio.dataInizio}`}>
-            <td>{viaggio.nome}</td>
-            <td>{viaggio.destinazione}</td>
-            <td>{formattaData(viaggio.dataInizio)} – {formattaData(viaggio.dataFine)}</td>
+        {viaggi.map((v) => (
+          <tr key={`${v.id}`}>
+            <td>{v.nome}</td>
+            <td>{v.destinazione}</td>
+            <td>{formattaData(v.dataInizio)} – {formattaData(v.dataFine)}</td>
           </tr>
         ))}
       </tbody>

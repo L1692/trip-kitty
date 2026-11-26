@@ -4,7 +4,7 @@ CREATE TABLE viaggio (
     data_inizio DATE NOT NULL,
     data_fine DATE NOT NULL,
     destinazione VARCHAR(255) NOT NULL,
-    valuta CHAR(3) NOT NULL,
+    valuta CHAR(3) NOT NULL DEFAULT 'EUR',
     creato_il TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_date CHECK (data_fine >= data_inizio)
 );
